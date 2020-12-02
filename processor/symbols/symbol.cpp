@@ -11,10 +11,11 @@ enum SymbolType {
     loopBegin,
     loopEnd,
     in,
-    out
+    out,
+    null
 }; 
 
-#define fromOptymizer -1
+#define fromOptimizer -1
 
 class Symbol {
     public:
@@ -23,7 +24,7 @@ class Symbol {
         Symbol(SymbolType _type, int _charNumber);
 };
 
-class CmplxSymbol : Symbol {
+class CmplxSymbol : public Symbol {
     public:
         int optimizedValue;
         CmplxSymbol(SymbolType _type, int optimizedValue);
@@ -45,9 +46,8 @@ Symbol::Symbol (SymbolType _type, int _charNumber)
     charNumber = _charNumber;
 }
 
-CmplxSymbol::CmplxSymbol (SymbolType _type, int _optimizedValue)
+CmplxSymbol::CmplxSymbol (SymbolType _type, int _optimizedValue): Symbol(SymbolType::null, fromOptimizer)
 {
     type = _type;
-    charNumber = fromOptymizer;
     optimizedValue = _optimizedValue;
 }

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
+#include "processor/processor.h"
 
 int main(int argc, char** argv)
 {
@@ -18,11 +20,13 @@ int main(int argc, char** argv)
         return 1;
     }
     std::cerr << "Starting bfc64 v.0" << std::endl;
-    while (source.good())
+    try
     {
-        char x;
-        source >> x;
-        std::cout << x;
+        parseSourceFile(source);
     }
-    source.close();
+    catch (std::runtime_error e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 }
