@@ -20,14 +20,15 @@ if __name__ == '__main__':
         .replace("\n", "\\n").replace("label()", "\" + label + \"") + "\""
     loopBegin = "\"" + open(path + "loopBegin.asm").read() \
         .replace("\n", "\\n").replace("loopBegin()", "\" + labelBegin + \"") \
-        .replace("loopEnd()", "\" + labelEnd + \"") + "\""
+        .replace("loopEnd()", "\" + labelEnd + \"") \
+        .replace("label()", "\" + label + \"") + "\""
     loopEnd = "\"" + open(path + "loopEnd.asm").read() \
         .replace("\n", "\\n").replace("loopBegin()", "\" + labelBegin + \"") \
         .replace("loopEnd()", "\" + labelEnd + \"") + "\""
     begin = "\"" + open(path + "pre.asm").read() \
         .replace("\n", "\\n") + "\""
     end = "\"" + open(path + "end.asm").read() \
-        .replace("\n", "\\n") + "\""
+        .replace("\n", "\\n").replace("doWords()", ".byte 0"+ ",0" * 512) + "\""
     out = "\"" + open(path + "out.asm").read() \
         .replace("\n", "\\n") + "\""
 

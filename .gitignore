@@ -1,3 +1,7 @@
 *.o
 bfc64
 *.prg
+isWrk.asm
+isWrk.txt
+test.asm
+processor/arch/template.cpp

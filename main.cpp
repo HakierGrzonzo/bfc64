@@ -22,7 +22,8 @@ int main(int argc, char** argv)
     std::cerr << "Starting bfc64 v.0" << std::endl;
     try
     {
-        parseSourceFile(source);
+        std::string output = compiler(parseSourceFile(source));
+        std::cout << output;
     }
     catch (std::runtime_error e)
     {

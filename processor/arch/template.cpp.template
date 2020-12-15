@@ -1,51 +1,53 @@
 #include <string>
 
-std::string dec(std::string label)
-{
-    return $dec;
-}
+namespace arch {
+    std::string dec(std::string label)
+    {
+        return $dec;
+    }
 
-std::string inc(std::string label)
-{
-    return $inc;
-}
+    std::string inc(std::string label)
+    {
+        return $inc;
+    }
 
-std::string left(std::string label)
-{
-    return $left;
-}
+    std::string left(std::string label)
+    {
+        return $left;
+    }
 
-std::string right(std::string label)
-{
-    return $right;
-}
+    std::string right(std::string label)
+    {
+        return $right;
+    }
 
-std::string in(std::string label)
-{
-    return $in;
-}
+    std::string in(std::string label)
+    {
+        return $in;
+    }
 
-std::string loopBegin(std::string labelBegin, std::string labelEnd)
-{
-    return $loopBegin;
-}
+    std::string loopBegin(std::string labelBegin, std::string labelEnd, std::string label)
+    {
+        return $loopBegin;
+    }
 
-std::string loopEnd(std::string labelBegin, std::string labelEnd)
-{
-    return $loopEnd;
-}
+    std::string loopEnd(std::string labelBegin, std::string labelEnd)
+    {
+        return $loopEnd;
+    }
 
-std::string begin()
-{
-    return $begin;
-}
+    std::string begin()
+    {
+        return $begin;
+    }
 
-std::string end()
-{
-    return $end;
-}
+    std::string end()
+    {
+        return $end;
+    }
 
-std::string out()
-{
-    return $out;
+    std::string out()
+    {
+        return $out;
+    }
 }
