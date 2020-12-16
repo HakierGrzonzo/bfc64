@@ -5,3 +5,5 @@ isWrk.asm
 isWrk.txt
 test.asm
 processor/arch/template.cpp
+main.aux
+main.log

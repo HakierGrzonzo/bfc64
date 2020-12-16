@@ -1,5 +1,5 @@
 BasicUpstart2(start)
-*=$4000
+*=$4000 "Program"
 // $00FB - pointer to tape page
 start:
     jsr $ff81

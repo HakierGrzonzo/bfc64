@@ -26,9 +26,9 @@ if __name__ == '__main__':
         .replace("\n", "\\n").replace("loopBegin()", "\" + labelBegin + \"") \
         .replace("loopEnd()", "\" + labelEnd + \"") + "\""
     begin = "\"" + open(path + "pre.asm").read() \
-        .replace("\n", "\\n") + "\""
+        .replace("\n", "\\n").replace("\"", "\\\"") + "\""
     end = "\"" + open(path + "end.asm").read() \
-        .replace("\n", "\\n").replace("doWords()", ".byte 0"+ ",0" * 512) + "\""
+        .replace("\n", "\\n").replace("\"", "\\\"") + "\""
     out = "\"" + open(path + "out.asm").read() \
         .replace("\n", "\\n") + "\""
 

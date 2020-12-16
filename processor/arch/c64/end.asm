@@ -1,5 +1,6 @@
 loop:
     jmp loop
 
-*=$C000
-doWords()
+*=$C000 "Tape"
+
+.fill 1024, 0

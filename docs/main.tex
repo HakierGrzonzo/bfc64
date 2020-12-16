@@ -1,0 +1,211 @@
+% !TEX program = xelatex
+%Wzór dokumentu
+%tu zmień marginesy i rozmiar czcionki
+\documentclass[a4paper,12pt]{article}
+\usepackage{inputenc}[utf8]
+\usepackage[margin=2.5cm]{geometry}
+
+%Lepiej tego nie zmieniaj, jak co to dodawaj pakiety
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{multicol}
+\usepackage{listings}
+
+%inny wygląd
+%\usepackage{tgbonum}
+
+
+%Zmienne, zmień je!
+\graphicspath{ {./ilustracje/} }
+\title{bfc64 - dokumentacja}
+\author{Grzegorz Koperwas}
+\date{\today}
+
+%lokalizacja polska (odkomentuj jak piszesz po polsku)
+
+\usepackage{polski}
+\usepackage[polish]{babel} 
+\usepackage{indentfirst}
+\usepackage{icomma} 
+
+\brokenpenalty=1000
+\clubpenalty=1000
+\widowpenalty=1000    
+
+%nie odkometowuj wszystkiego, użyj mózgu
+%\renewcommand\thechapter{\arabic{chapter}.}
+\renewcommand\thesection{\arabic{section}.}
+\renewcommand\thesubsection{\arabic{section}.\arabic{subsection}.}
+\renewcommand\thesubsubsection{\arabic{subsubsection}.}
+
+%Makra
+
+\newcommand{\obrazek}[2]{
+\begin{figure}[h]]
+    \centering
+    \includegraphics[scale=#1]{#2}
+\end{figure}
+}     
+        
+
+\newcommand{\twierdzonko}[1]{
+    \begin{center}
+    \begin{mdframed}
+    #1
+    \end{mdframed}          
+    \end{center}
+} 
+
+\newcommand{\dwanajeden}[2]{
+\ensuremath \left( \begin{array}{c}
+    #1\\
+    #2
+\end{array} \right)
+}  
+
+%Stopka i head (sekcja której nie powinno się zmieniać)
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+
+%Zmieniaj od tego miejsca
+\rfoot{\thepage}
+\lfoot{Grzegorz Koperwas}
+\lhead{}
+\rhead{Ostatnia edycja: \today}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+
+\begin{document}
+    \maketitle
+    \thispagestyle{fancy}
+
+    \section{Kompilowanie}
+
+    \subsection*{Wymagania do kompilacji:}
+    \begin{itemize}
+        \item gcc - kompilator
+        \item make
+        \item python - generowanie pliku \texttt{template.cpp} (patrz kompilator)
+        \item xelatex - dokumentacja
+    \end{itemize}
+
+    Kompilujemy poleceniem \texttt{make}.
+    
+    Instalujemy poleceniem \texttt{sudo make install}
+
+    Dokumentacje kompilujemy poleceniem \texttt{make docs}.
+
+    \subsubsection*{Wymagania do używania}
+
+    \begin{itemize}
+        \item kickassembler\footnote{http://theweb.dk/KickAssembler/Main.html\#frontpage} - bfc64 generuje pliki \texttt{.asm} dla tego assemblera
+        \item System Linux, testowane wyłącznie na Arch'u
+    \end{itemize}
+
+    Program uruchamiamy poleceniem \texttt{bfc64 <ścieżka do pliku źródłowego>}, utworzy on plik a.asm gotowy do przetworzenia kickassemblerem za pomocą polecenia \texttt{kickass a.asm}. Utworzy on nam plik wykonywalny \texttt{a.prg} dla commodore 64 lub emulatora.
+
+    Emulator Vice\footnote{https://vice-emu.sourceforge.io/} uruchomi automatycznie programy poleceniem:
+    \begin{lstlisting}
+    x64sc -autostart $PWD/a.prg
+    \end{lstlisting}
+
+    \section{Działanie kompilatora bfc64}
+
+    Kompilator składa się z dwóch głównych części:
+    \begin{itemize}
+        \item Parsera - zamieniającego pliki tekstowe na listę symboli
+        \item Kompilatora - zamieniającego listę symboli na kod assemblera korzystając z funkcji z przestrzeni \texttt{arch}
+    \end{itemize}
+
+    \subsection*{Parser}
+
+    Parser jest funkcją \texttt{parseSourceFile}, która przyjmuje jako argument plik z kodem źródłowym. Zamienia ona wewnętrznie znaki języka \emph{brainfuck} na odpowiadające im symbole według tablicy \ref{tab:symbole}
+
+    \begin{table}[h]
+        \label{tab:symbole}
+        \begin{tabular}{|c|l|}
+            \hline
+            Symbol         & Wartość   \\ \hline
+            +              & inc       \\ \hline
+            -              & dec       \\ \hline
+            \textless{}    & left      \\ \hline
+            \textgreater{} & right     \\ \hline
+            {[}            & loopBegin \\ \hline
+            {]}            & loopEnd   \\ \hline
+            ,              & in        \\ \hline
+            .              & out       \\ \hline
+        \end{tabular}
+        \centering
+        \caption{Symbole oraz odpowiadające im wartości z \texttt{SymbolType}}
+    \end{table}
+
+    Dodatkowo parser wyświetla ostrzeżenia w przypadku jeśli w trakcie pętli za każdą iteracją jest porównywalna inna komórka pamięci, na przykład dla pętli \texttt{[>><]} zostanie wyświetlone ostrzeżenie wraz z numerem lini początkowym i końcowym.
+
+    Jeśli parser napotka \texttt{]} bez poprzedniego \texttt{[} czy nie znajdzie w pliku końca pętli przed jego końcem zgłosi on błąd użytkownikowi i nie skompiluje programu.
+
+    Parser traktuje wszystkie inne znaki jako komentarz.
+    
+    Dodatkowo parser może zostać rozbudowany o zoptymalizowane symbole \texttt{add, subtract, jmpLeft, jmpRight} które łączą sąsiednie symbole w jeden\footnote{Na przykład \texttt{++-+++} zostanie zamienione na \texttt{add}}, oszczędzając przy tym pamięć oraz cykle procesora, jednak w obecnej wersji nie zostało to jeszcze zaimplementowane. 
+
+    \subsection*{Kompilator}
+
+    Kompilator tworzy stringa na podstawie listy symboli z parsera za pomocą wzorców generowanych podczas kompilacji z plików w folderze \texttt{processor/arch/c64}. Dodatkowo na początek dołącza \texttt{arch::begin} a na koniec \texttt{arch::end}
+
+    Wzorce, z których korzysta kompilator są generowane automatycznie skryptem pythona \texttt{templateGen.py}. Generuje on plik źródłowy \texttt{template.cpp} z pomocą pliku-wzorca \texttt{template.cpp.template}, do którego podstawia za placeholdery\footnote{W formie \texttt{\$nazwa}} odpowiednie sumy stringów oraz parametrów funkcji według plików-wzorców assemblera, w których podmienia \texttt{label()} na argument \texttt{label} itd. Opis wzorców w sekcji \ref{wzorce}.
+
+
+    Wygenerowany \texttt{string} program zapisuje do pliku wyjściowego.
+
+    \section{Opis działania skompilowanego programu}\label{wzorce}
+    
+    \subsubsection*{Wyzwania architektury 6502/6510/commodore 64}
+
+    Procesory \emph{MOS 6502/6510} posiadają 8 bitową szynę danych oraz 16 bitową szynę adresową. Z tego powodu ,,pointery'' muszą się znajdować w pierwszych 256 bajtach pamięci, tak zwanej ,,zeropage''. Kompilator umieszcza w pamięci o adresie \texttt{\$00FB} adres \texttt{\$C000}, który jest adresem początku taśmy. 
+
+    Procesor posiada opcje indeksowania pamięci rejestrem X lub Y, taki odpowiednik $\left(\texttt{pointer} + \texttt{rejestr}_X \right)^*$ w języku \texttt{C++}. Jednak jako iż rejestr \texttt{X} jest 8 bitowy, a chcemy taśmę o długości większej od 256 to ruch po taśmie w lewo wygląda tak:
+
+    \begin{figure}[h]
+        $\vdots$
+    \centering
+        \begin{lstlisting}
+    cpx #$00 // compare X and 0
+    bne label // if X != 0, go to label
+    dec $00fb + 1 // decrement most significant 
+                  // byte of tape pointer by 1
+label:
+    dex // decrement X by 1
+        \end{lstlisting}
+        $\vdots$
+    \centering
+    \end{figure}
+
+    \subsection*{Taśma}
+
+    Definicja taśmy, w pliku \texttt{end.asm}, wygląda tak:
+
+    \begin{figure}[h]
+        \begin{lstlisting}
+*=$C000 "Tape" // at address $C000
+
+.fill 1024, 0 // place 1024 zeros
+        \end{lstlisting}
+    \end{figure}
+
+    Generuje ona taśmę o długości 1024 bajtów, jednak jako iż kompilator nie zabezpiecza nas przed ,,wyjściem'' z jej przestrzeni, zatem jeśli komuś chce się pisać dużo \texttt{>} i wiedząc iż adres pierwszej komórki to \texttt{\$C0FF} możemy zmieniać kolory tła, tekstu, odtwarzać muzykę oraz nadpisywać program.
+
+    \subsection*{Wypisywanie znaków na ekran i ich odczyt}
+
+    Kernal commodore 64 posiada \emph{funkcje}, które realizują te zadania.
+
+    Pod adresem \texttt{\$FFCF} jest funkcja, która umieszcza w rejestrze A wartość wprowadzoną przez użytkownika.
+
+    Pod adresem \texttt{\$FFD2} jest funkcja, która wartość w rejestrze A wypisuje na ekran.
+
+    Wadą tych funkcji jest to iż nie używają zestawu znaków ASCII, tylko własnego PETSCII\footnote{https://www.c64-wiki.com/wiki/PETSCII}. Z tego powodu przy wypisywaniu na ekran za pomocą \texttt{.} trzeba ustawiać wartość komórki na wartości PETSCIII
+    \end{document}

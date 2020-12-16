@@ -28,5 +28,8 @@ test.prg: test.asm
 test: test.prg
 	x64sc -autostart $(PWD)/test.prg
 
+docs: docs/main.tex
+	xelatex docs/main.tex
+
 clean:
-	rm *.o bfc64 processor/arch/template.cpp test.asm test.prg
+	rm *.o bfc64 processor/arch/template.cpp test.asm test.prg 
