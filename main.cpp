@@ -13,8 +13,10 @@ int main(int argc, char** argv)
         return 1;
     }
     std::ifstream source;
+    std::ofstream outputFile;
     source.open(argv[1]);
-    if (!source.is_open())
+    outputFile.open("a.asm");
+    if (!source.is_open() || !outputFile.is_open())
     {
         std::cerr << "Failed to open file!" << std::endl;
         return 1;
@@ -23,7 +25,9 @@ int main(int argc, char** argv)
     try
     {
         std::string output = compiler(parseSourceFile(source));
-        std::cout << output;
+        outputFile << output;
+        outputFile.close();
+        std::cout << "Done!" << std::endl;
     }
     catch (std::runtime_error e)
     {

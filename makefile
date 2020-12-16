@@ -19,17 +19,17 @@ template.o: processor/arch/template.cpp
 processor/arch/template.cpp: processor/arch/templateGen.py processor/arch/c64/* processor/arch/template.cpp.template
 	python processor/arch/templateGen.py processor/arch/c64/
 
-test.asm: bfc64 tests/test.b
-	./bfc64 tests/test.b > test.asm
+a.asm: bfc64 tests/test.b
+	./bfc64 tests/test.b
 
-test.prg: test.asm
-	kickass -showmem test.asm
+a.prg: a.asm
+	kickass -showmem a.asm
 
-test: test.prg
-	x64sc -autostart $(PWD)/test.prg
+test: a.prg
+	x64sc -autostart $(PWD)/a.prg
 
 docs: docs/main.tex
 	xelatex docs/main.tex
 
 clean:
-	rm *.o bfc64 processor/arch/template.cpp test.asm test.prg 
+	rm *.o bfc64 processor/arch/template.cpp a.asm a.prg 
