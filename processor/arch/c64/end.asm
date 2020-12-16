@@ -1,6 +1,6 @@
 loop:
     jmp loop
 
-*=$C000 "Tape"
+*=$7300 "Tape"
 
 .fill 1024, 0

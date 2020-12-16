@@ -1,5 +1,7 @@
-    lda ($fb),x
+    lda ($fb),y
     cmp #$00
     beq label()
-    dec ($fb),x
+    clc
+    sbc #$00
+    sta ($fb),y
 label():

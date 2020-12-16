@@ -1,5 +1,5 @@
 loopBegin():
-    lda ($fb),x
+    lda ($fb),y
     cmp #$00
     bne label()
     jmp loopEnd()

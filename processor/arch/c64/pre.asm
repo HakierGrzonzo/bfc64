@@ -9,8 +9,8 @@ start:
     lda #$01
     sta $0286
 
-    lda #$C0
+    lda #$73
     sta $00FB + 1
     lda #$00
-    sta $00FB // memory at is like $00FB to …00 C0… so we have a pointer to $C000
-    ldx #$ff // initialize tape index to 255
+    sta $00FB // memory at is like $00FB to …00 73… so we have a pointer to $7300
+    ldy #$ff // initialize tape index to 255

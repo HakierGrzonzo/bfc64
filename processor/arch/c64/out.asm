@@ -1,2 +1,2 @@
-    lda ($fb),x
+    lda ($fb),y
     jsr $ffd2
