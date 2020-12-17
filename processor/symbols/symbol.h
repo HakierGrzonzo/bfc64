@@ -20,11 +20,6 @@ class Symbol {
     public:
         SymbolType type;
         int charNumber;
-        Symbol(SymbolType _type, int _charNumber);
-};
-
-class CmplxSymbol : Symbol {
-    public:
         int optimizedValue;
-        CmplxSymbol(SymbolType _type, int optimizedValue);
+        Symbol(SymbolType _type, int _charNumber, int _optimizedValue = -1);
 };

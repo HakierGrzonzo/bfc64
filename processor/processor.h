@@ -6,3 +6,4 @@
 
 std::vector<Symbol> parseSourceFile(std::ifstream& sourceFile);
 std::string compiler(std::vector<Symbol> program);
+std::vector<Symbol> optimize(std::vector<Symbol> program);

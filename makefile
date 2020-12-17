@@ -1,11 +1,14 @@
-bfc64: main.o parser.o symbol.o template.o compiler.o
-	g++ main.o parser.o symbol.o template.o compiler.o -o bfc64
+bfc64: main.o parser.o symbol.o template.o compiler.o optimizer.o
+	g++ main.o parser.o symbol.o template.o compiler.o optimizer.o -o bfc64
 
 parser.o: processor/parser.cpp
 	g++ -c processor/parser.cpp
 
 compiler.o: processor/compiler.cpp
 	g++ -c processor/compiler.cpp
+
+optimizer.o: processor/optimizer.cpp
+	g++ -c processor/optimizer.cpp
 
 symbol.o: processor/symbols/symbol.cpp
 	g++ -c processor/symbols/symbol.cpp

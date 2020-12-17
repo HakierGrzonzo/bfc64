@@ -54,6 +54,13 @@ std::string compiler(std::vector<Symbol> program)
             case SymbolType::out:
                 result += arch::out();
                 break;
+            case SymbolType::add:
+                result += arch::add(std::to_string(program[y].optimizedValue), getLabel(labelCounter++));
+                break;
+            case SymbolType::subtract:
+                result += arch::subtract(std::to_string(program[y].optimizedValue), getLabel(labelCounter), getLabel(labelCounter + 1));
+                labelCounter += 2;
+                break;
             default:
                 throw std::runtime_error("Not implemented");
         }

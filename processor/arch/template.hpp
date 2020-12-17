@@ -12,4 +12,6 @@ namespace arch {
     std::string begin();
     std::string out();
     std::string end();
+    std::string subtract(std::string value, std::string label, std::string label2);
+    std::string add(std::string value, std::string label);
 }

@@ -24,10 +24,10 @@ int main(int argc, char** argv)
     std::cerr << "Starting bfc64 v.0" << std::endl;
     try
     {
-        std::string output = compiler(parseSourceFile(source));
+        std::string output = compiler(optimize(parseSourceFile(source)));
         outputFile << output;
         outputFile.close();
-        std::cout << "Done!" << std::endl;
+        std::cout << "Wrote result to a.asm" << std::endl << "Done!" << std::endl;
     }
     catch (std::runtime_error e)
     {

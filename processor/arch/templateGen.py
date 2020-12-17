@@ -31,6 +31,13 @@ if __name__ == '__main__':
         .replace("\n", "\\n").replace("\"", "\\\"") + "\""
     out = "\"" + open(path + "out.asm").read() \
         .replace("\n", "\\n") + "\""
+    add = "\"" + open(path + "add.asm").read() \
+        .replace("\n", "\\n").replace("label()", "\" + label + \"")\
+        .replace("value()", "\" + value + \"") + "\""
+    subtract = "\"" + open(path + "subtract.asm").read() \
+        .replace("\n", "\\n").replace("label()", "\" + label + \"")\
+        .replace("value()", "\" + value + \"") \
+        .replace("label2()", "\" + label2 + \"") + "\""
 
     temp = template.read().replace("$dec", dec) \
         .replace("$inc", inc) \
@@ -41,6 +48,8 @@ if __name__ == '__main__':
         .replace("$loopEnd", loopEnd) \
         .replace("$begin", begin) \
         .replace("$end", end) \
-        .replace("$out", out)
+        .replace("$out", out) \
+        .replace("$add", add) \
+        .replace("$subtract", subtract)
     destination.write(temp)
     destination.close()

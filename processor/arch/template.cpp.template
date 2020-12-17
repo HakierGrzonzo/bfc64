@@ -50,4 +50,14 @@ namespace arch {
     {
         return $out;
     }
+
+    std::string add(std::string value, std::string label)
+    {
+        return $add;
+    }
+
+    std::string subtract(std::string value, std::string label, std::string label2)
+    {
+        return $subtract;
+    }
 }
