@@ -119,9 +119,10 @@
 
     \section{Działanie kompilatora bfc64}
 
-    Kompilator składa się z dwóch głównych części:
+    Kompilator składa się z trzech głównych części:
     \begin{itemize}
         \item Parsera - zamieniającego pliki tekstowe na listę symboli
+        \item Optymalizatora zamieniającego sąsiednie \texttt{++++--} na operacje dodawania lub odejmowania.
         \item Kompilatora - zamieniającego listę symboli na kod assemblera korzystając z funkcji z przestrzeni \texttt{arch}
     \end{itemize}
 
@@ -153,7 +154,9 @@
 
     Parser traktuje wszystkie inne znaki jako komentarz.
     
-    Dodatkowo parser może zostać rozbudowany o zoptymalizowane symbole \texttt{add, subtract, jmpLeft, jmpRight} które łączą sąsiednie symbole w jeden\footnote{Na przykład \texttt{++-+++} zostanie zamienione na \texttt{add}}, oszczędzając przy tym pamięć oraz cykle procesora, jednak w obecnej wersji nie zostało to jeszcze zaimplementowane. 
+    \subsection*{Optymalizator}
+
+    W celu ograniczenia pamięci potrzebnej na załadowanie programu optymalizator zamienia sąsiednie symbole \texttt{+} oraz \texttt{-} na symbole specjalne \texttt{add} oraz \texttt{subtract}. W planach jest dodanie zamieniania \texttt{>} i \texttt{<} na symbole specjalne \texttt{jmpLeft} oraz \texttt{jmpRight}
 
     \subsection*{Kompilator}
 
@@ -168,21 +171,21 @@
     
     \subsubsection*{Wyzwania architektury 6502/6510/commodore 64}
 
-    Procesory \emph{MOS 6502/6510} posiadają 8 bitową szynę danych oraz 16 bitową szynę adresową. Z tego powodu ,,pointery'' muszą się znajdować w pierwszych 256 bajtach pamięci, tak zwanej ,,zeropage''. Kompilator umieszcza w pamięci o adresie \texttt{\$00FB} adres \texttt{\$C000}, który jest adresem początku taśmy. 
+    Procesory \emph{MOS 6502/6510} posiadają 8 bitową szynę danych oraz 16 bitową szynę adresową. Z tego powodu ,,pointery'' muszą się znajdować w pierwszych 256 bajtach pamięci, tak zwanej ,,zeropage''. Kompilator umieszcza w pamięci o adresie \texttt{\$00FB} adres \texttt{\$7300}, który jest adresem początku taśmy. 
 
-    Procesor posiada opcje indeksowania pamięci rejestrem X lub Y, taki odpowiednik $\left(\texttt{pointer} + \texttt{rejestr}_X \right)^*$ w języku \texttt{C++}. Jednak jako iż rejestr \texttt{X} jest 8 bitowy, a chcemy taśmę o długości większej od 256 to ruch po taśmie w lewo wygląda tak:
+    Procesor posiada opcje indeksowania pamięci rejestrem Y, taki odpowiednik $\left(\texttt{pointer} + \texttt{rejestr}_Y \right)^*$ w języku \texttt{C++}. Jednak jako iż rejestr \texttt{Y} jest 8 bitowy, a chcemy taśmę o długości większej od 256 to ruch po taśmie w lewo wygląda tak:
 
     \begin{figure}[h]
         $\vdots$
     \centering
         \begin{lstlisting}
-    cpx #$00 // compare X and 0
-    bne label // if X != 0, go to label
-    dec $00fb + 1 // decrement most significant 
-                  // byte of tape pointer by 1
-label:
-    dex // decrement X by 1
+                    cpy #$00      // compare Y to 0
+                    bne label()   // if Y != 0 goto label
+                    dec $00fb + 1 // decrement tape pointer
+                label():
+                    dey           // decrement Y
         \end{lstlisting}
+        \centering
         $\vdots$
     \centering
     \end{figure}
@@ -193,13 +196,12 @@ label:
 
     \begin{figure}[h]
         \begin{lstlisting}
-*=$C000 "Tape" // at address $C000
-
-.fill 1024, 0 // place 1024 zeros
+        *=$7300 "Tape"    // at address $C000
+            .fill 1024, 0 // place 1024 zeros
         \end{lstlisting}
     \end{figure}
 
-    Generuje ona taśmę o długości 1024 bajtów, jednak jako iż kompilator nie zabezpiecza nas przed ,,wyjściem'' z jej przestrzeni, zatem jeśli komuś chce się pisać dużo \texttt{>} i wiedząc iż adres pierwszej komórki to \texttt{\$C0FF} możemy zmieniać kolory tła, tekstu, odtwarzać muzykę oraz nadpisywać program.
+    Generuje ona taśmę o długości 1024 bajtów, jednak jako iż kompilator nie zabezpiecza nas przed ,,wyjściem'' z jej przestrzeni, zatem jeśli komuś chce się pisać dużo \texttt{>} i wiedząc iż adres pierwszej komórki to \texttt{\$73FF}/\footnote{Początek taśmy \texttt{\$7300} + początkowa wartość \texttt{Y} równa \texttt{\$ff}} możemy zmieniać kolory tła, tekstu, odtwarzać muzykę oraz nadpisywać program.
 
     \subsection*{Wypisywanie znaków na ekran i ich odczyt}
 
