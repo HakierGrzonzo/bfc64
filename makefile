@@ -34,5 +34,8 @@ test: a.prg
 docs: docs/main.tex
 	xelatex docs/main.tex
 
+install: bfc64
+	cp bfc64 /usr/bin/
+
 clean:
 	rm *.o bfc64 processor/arch/template.cpp a.asm a.prg 
