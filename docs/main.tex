@@ -131,7 +131,6 @@
     Parser jest funkcją \texttt{parseSourceFile}, która przyjmuje jako argument plik z kodem źródłowym. Zamienia ona wewnętrznie znaki języka \emph{brainfuck} na odpowiadające im symbole według tablicy \ref{tab:symbole}
 
     \begin{table}[h]
-        \label{tab:symbole}
         \begin{tabular}{|c|l|}
             \hline
             Symbol         & Wartość   \\ \hline
@@ -146,6 +145,7 @@
         \end{tabular}
         \centering
         \caption{Symbole oraz odpowiadające im wartości z \texttt{SymbolType}}
+        \label{tab:symbole}
     \end{table}
 
     Dodatkowo parser wyświetla ostrzeżenia w przypadku jeśli w trakcie pętli za każdą iteracją jest porównywalna inna komórka pamięci, na przykład dla pętli \texttt{[>><]} zostanie wyświetlone ostrzeżenie wraz z numerem lini początkowym i końcowym.
@@ -211,5 +211,29 @@
 
     Pod adresem \texttt{\$FFD2} jest funkcja, która wartość w rejestrze A wypisuje na ekran.
 
-    Wadą tych funkcji jest to iż nie używają zestawu znaków ASCII, tylko własnego PETSCII\footnote{https://www.c64-wiki.com/wiki/PETSCII}. Z tego powodu przy wypisywaniu na ekran za pomocą \texttt{.} trzeba ustawiać wartość komórki na wartości PETSCIII
+    Wadą tych funkcji jest to iż nie używają zestawu znaków ASCII, tylko własnego PETSCII\footnote{https://www.c64-wiki.com/wiki/PETSCII}. Z tego powodu przy wypisywaniu na ekran za pomocą \texttt{.} trzeba ustawiać wartość komórki na wartości PETSCIII.
+
+    \subsection*{Wzorce}
+
+    Kompilator korzysta z wzorców w folderze \texttt{processor/arch/c64}, które są plikami assemblera które są wstawiane za odpowiednie symbole. Za symbol \texttt{inc} wstawia \texttt{inc.asm} itd. Są one przetwarzane przez skrypt pythona do pliku \texttt{template.cpp} podczas kompilacji by nie było potrzeby wpisywania ich na sztywno.
+    
+    Przykładowo na ,,Rysunku'' \ref{kod:inc} do rejestru \texttt{A} ładowana jest wartość aktualnej komórki, następnie porównywana jest z \texttt{\#\$ff}\footnote{\# oznacza że jest to wartość a nie adres}. Jeśli zachodzi równość, program przechodzi do \texttt{label}, w innym przypadku upewnia się że flaga \texttt{carry} jest wyłączona i dodaje do rejestru \texttt{A} jedynkę. Następnie zapisuje wynik w pamięci.
+
+    \begin{figure}[h]
+        $\vdots$
+        \centering
+        \begin{lstlisting}
+                            lda ($fb),y
+                            cmp #$ff
+                            beq label()
+                            clc
+                            adc #$01
+                            sta ($fb),y
+                        label():
+        \end{lstlisting}
+        $\vdots$
+        \centering
+        \caption{Zwiększanie komórki o 1}
+        \label{kod:inc}
+    \end{figure}
     \end{document}
